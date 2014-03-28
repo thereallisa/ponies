@@ -1,0 +1,28 @@
+
+{{template "bootstrap_base_head" .}}
+
+  <body>
+    {{ template "navbar" .}}
+
+    <div class="container">
+      <div class="row text-center">
+        <h1>Welcome to an awesome Simply Measured #golang web app</h1><br />
+        <form action="/handler" method="post">
+      <div><input name="emotion" rows="3" cols="60"></input></div>
+      <div><input type="submit" value="Request Pony Emotion"></div>
+    </form>
+      </div>
+      {{ if .Global.PonyResults }}
+      <div class="row text-center" name="ponyResults">
+      	{{ range .Global.PonyResults.Faces }}
+      		  <img src="{{ .Image }}"/>
+              {{ else }}
+              No Results Yet. :( TRY HARDER!!!</li>
+              {{ end }}
+      </div>
+      {{ end }}
+    </div>
+
+    
+
+{{template "bootstrap_base_foot" .}}
