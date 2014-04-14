@@ -46,6 +46,7 @@ func handleEmo(w http.ResponseWriter, r *http.Request) {
 const ponyForm = `
 <html>
 <head>
+<link rel="icon" href="../favicon.ico"/>
 <title>Emo Ponies</title>
 </head>
   <body>
