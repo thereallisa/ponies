@@ -1,46 +1,48 @@
 package ponies
 
 import (
-    "fmt"
-    "net/http"
+	"fmt"
+	"net/http"
 
-    "appengine"
-    "appengine/urlfetch"
-    "io/ioutil"
-    "encoding/json"
+	"encoding/json"
+	"io/ioutil"
+
+	"appengine"
+	"appengine/urlfetch"
 )
 
 func init() {
-    http.HandleFunc("/", handler)
-    http.HandleFunc("/handleEmo", handleEmo)
+	http.HandleFunc("/", handler)
+	http.HandleFunc("/handleEmo", handleEmo)
 }
-type Stable struct{
-    Faces []Pony
+
+type Stable struct {
+	Faces []Pony
 }
-type Pony struct{
-    Image string
+type Pony struct {
+	Image string
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-    fmt.Fprint(w, ponyForm)
+	fmt.Fprint(w, ponyForm)
 }
 
 func handleEmo(w http.ResponseWriter, r *http.Request) {
-    c := appengine.NewContext(r)
-    client := urlfetch.Client(c)
-    resp, _ := client.Get("http://ponyfac.es/api.json/tag:" + r.FormValue("emotion"))
+	c := appengine.NewContext(r)
+	client := urlfetch.Client(c)
+	resp, _ := client.Get("http://ponyfac.es/api.json/tag:" + r.FormValue("emotion"))
 
-    body, _ := ioutil.ReadAll(resp.Body)
-    stable := new(Stable)
-    json.Unmarshal(body, stable)
-    
-    fmt.Fprint(w, ponyForm)
-    fmt.Fprintf(w, "<html>")
+	body, _ := ioutil.ReadAll(resp.Body)
+	stable := new(Stable)
+	json.Unmarshal(body, stable)
 
-    for i := 0; i < len(stable.Faces); i++ {
-        fmt.Fprintf(w, "<img src=\"%v\"/>", stable.Faces[i].Image)
-    }
-    fmt.Fprintf(w, "</html>")
+	fmt.Fprint(w, ponyForm)
+	fmt.Fprintf(w, "<html>")
+
+	for i := 0; i < len(stable.Faces); i++ {
+		fmt.Fprintf(w, "<img src=\"%v\"/>", stable.Faces[i].Image)
+	}
+	fmt.Fprintf(w, "</html>")
 }
 
 const ponyForm = `
