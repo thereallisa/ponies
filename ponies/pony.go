@@ -1,10 +1,12 @@
 package ponies
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"text/template"
 
 	"appengine"
 	"appengine/urlfetch"
@@ -23,7 +25,8 @@ type Pony struct {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, ponyForm)
+	t := template.Must(template.ParseFiles("ponies/layout.html"))
+	t.Execute(w, map[string]string{"content": ""})
 }
 
 func handleEmo(w http.ResponseWriter, r *http.Request) {
@@ -35,30 +38,10 @@ func handleEmo(w http.ResponseWriter, r *http.Request) {
 	stable := new(Stable)
 	json.Unmarshal(body, stable)
 
-	fmt.Fprint(w, ponyForm)
-	fmt.Fprintf(w, "<html>")
-
+	var content bytes.Buffer
 	for _, pony := range stable.Faces {
-		fmt.Fprintf(w, "<img src=\"%v\"/>", pony.Image)
+		content.WriteString(fmt.Sprintf("<img src=\"%v\"/>", pony.Image))
 	}
-	fmt.Fprintf(w, "</html>")
+	t := template.Must(template.ParseFiles("ponies/layout.html"))
+	t.Execute(w, map[string]string{"content": content.String()})
 }
-
-const ponyForm = `
-<html>
-<head>
-<link rel="icon" href="../favicon.ico"/>
-<title>Emo Ponies</title>
-</head>
-  <body>
-    <form action="/handleEmo" method="post">
-      <div id="entry-form">
-        <label for="emotion">Emotion:</label><input name="emotion" rows="3" cols="60"/><input type="submit" value="Get Ponies">
-        <div>
-            <a href="http://www.cornify.com" onclick="cornify_add();return false;"><img src="http://www.cornify.com/assets/cornifycorn.gif" width="52" height="51" border="0" alt="Cornify" /></a><script type="text/javascript" src="http://www.cornify.com/js/cornify.js"></script>
-        </div>
-      </div>
-    </form>
-  </body>
-</html>
-`
