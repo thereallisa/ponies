@@ -1,11 +1,10 @@
 package ponies
 
 import (
-	"fmt"
-	"net/http"
-
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
+	"net/http"
 
 	"appengine"
 	"appengine/urlfetch"
@@ -39,8 +38,8 @@ func handleEmo(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, ponyForm)
 	fmt.Fprintf(w, "<html>")
 
-	for i := 0; i < len(stable.Faces); i++ {
-		fmt.Fprintf(w, "<img src=\"%v\"/>", stable.Faces[i].Image)
+	for _, pony := range stable.Faces {
+		fmt.Fprintf(w, "<img src=\"%v\"/>", pony.Image)
 	}
 	fmt.Fprintf(w, "</html>")
 }
